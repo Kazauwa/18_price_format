@@ -5,7 +5,7 @@ A script for prettifying stored prices.
 ## Usage
 #### CLI
 ```
-python format_prices.py -p --price [-d --degree]
+python format_prices.py -p --price
 ```
 #### Import
 ```
@@ -15,12 +15,9 @@ An input must be an integer, float or a string matching integer or float format.
 
 ## Parameters
 -p --price - Input price to format
--d --degree - Separation degree, must be a power of ten. 
-#### Example
-```
-$ python format_price.py -p 1234567 -d 1000000
-> 1 234567 
-```
+
+## Test
+`python test.py` runs unittest.
 
 ## Project Goals
 
