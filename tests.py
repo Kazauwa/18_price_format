@@ -21,13 +21,13 @@ class PriceFormattingTestCase(unittest.TestCase):
 
     def testFailure(self):
         failure_values = ['breakme', '123 45', '']
-        with self.assertRaises(ValueError):
-            for value in failure_values:
+        for value in failure_values:
+            with self.assertRaises(ValueError):
                 format_price(value)
 
         failure_types = [{'price': 1234}, None]
-        with self.assertRaises(TypeError):
-            for type in failure_types:
+        for type in failure_types:
+            with self.assertRaises(TypeError):
                 format_price(type)
 
 
