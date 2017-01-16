@@ -1,18 +1,21 @@
 import re
-from math import log10
+from math import log10, modf
 from argparse import ArgumentParser
 
 
 def separate_price(price):
-    separated_price = {'floor': None, 'fractional': ''}
-    separated_price['floor'] = int(price)
-    if bool(price % 1):
-        fractional = round(price % 1, 2)
+    separated_price = {'integer': None, 'fractional': ''}
+    fractional, integer = modf(price)
+    separated_price['integer'] = int(integer)
+    if fractional:
+        fractional = round(fractional, 2)
+        if not fractional < 1:
+            fractional = '0.99'
         separated_price['fractional'] = str(fractional).replace('0', '')
     return separated_price
 
 
-def prepare_valid_price(price):
+def normalize_price(price):
     if isinstance(price, (int, float)):
         valid_price = separate_price(price)
         return valid_price
@@ -26,8 +29,8 @@ def prepare_valid_price(price):
 
 
 def format_price(price):
-    valid_price = prepare_valid_price(price)
-    price, formated_price = valid_price['floor'], str(valid_price['floor'])
+    valid_price = normalize_price(price)
+    price, formated_price = valid_price['integer'], str(valid_price['integer'])
     separation_grade = 1000
     insert_index = int(log10(separation_grade))
     index_shift = insert_index + 1
