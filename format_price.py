@@ -1,45 +1,37 @@
 import re
-from math import log10, modf
+from math import modf
 from argparse import ArgumentParser
-
-
-def separate_price(price):
-    separated_price = {'integer': None, 'fractional': ''}
-    fractional, integer = modf(price)
-    separated_price['integer'] = int(integer)
-    if fractional:
-        fractional = round(fractional, 2)
-        if not fractional < 1:
-            fractional = '0.99'
-        separated_price['fractional'] = str(fractional).replace('0', '')
-    return separated_price
 
 
 def normalize_price(price):
     if isinstance(price, (int, float)):
-        valid_price = separate_price(price)
-        return valid_price
+        return float(price)
     if isinstance(price, str):
         if re.fullmatch('\d*[.,]?\d+', price):
             price = price.replace(',', '.')
-            valid_price = separate_price(float(price))
-            return valid_price
+            return float(price)
         raise ValueError('An input must match "[0-9].[0-9]" pattern!')
     raise TypeError('An input must be int, float or string matching "[0-9].[0-9]" pattern!')
 
 
+def normalize_fractional(fractional):
+    if not fractional:
+        return ''
+    fractional = '{:.2f}'.format(fractional)
+    if not float(fractional) < 1:
+        # we don't want our fraction rounded to 1.0 if it's somewhere around 0.99
+        fractional = '.99'
+    fractional = fractional.lstrip('0')
+    return fractional
+
+
 def format_price(price):
     valid_price = normalize_price(price)
-    price, formated_price = valid_price['integer'], str(valid_price['integer'])
-    separation_grade = 1000
-    insert_index = int(log10(separation_grade))
-    index_shift = insert_index + 1
-    price //= separation_grade
-    while price:
-        formated_price = '{} {}'.format(formated_price[:-insert_index], formated_price[-insert_index:])
-        insert_index += index_shift
-        price //= separation_grade
-    formated_price += valid_price['fractional']
+    fractional, integer = modf(valid_price)
+    valid_fractional = normalize_fractional(fractional)
+    formated_price = '{:,.0f}'.format(integer)
+    formated_price = formated_price.replace(',', ' ')
+    formated_price += valid_fractional
     return formated_price
 
 
